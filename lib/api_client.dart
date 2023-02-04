@@ -1,6 +1,5 @@
-import 'dart:convert';
 import 'dart:io';
-
+import 'package:dio/dio.dart';
 import 'package:location/location.dart';
 import 'package:weather_app/geolocation.dart';
 
@@ -16,12 +15,8 @@ class ApiClient {
     LocationData? locationData = await Geolocation().getLocation();
     String lat = locationData?.latitude.toString() ?? '55.7522';
     String lon = locationData?.longitude.toString() ?? '37.6156';
-    final url = Uri.parse('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=385bb906e33f38e8e09025c818d7ab22&units=metric&lang=ru');
-    final request = await client.getUrl(url);
-    final response = await request.close();
-    final jsonStrings = await response.transform(utf8.decoder).toList();
-    final jsonString = jsonStrings.join();
-    final json = jsonDecode(jsonString) as Map<String, dynamic>;
+    Response<Map<String, dynamic>> response = await Dio().get('https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=385bb906e33f38e8e09025c818d7ab22&units=metric&lang=ru');
+    final json = response.data;
     currentWeather = CurrentWeather.fromJson(json);
     return currentWeather;
   }
@@ -30,12 +25,8 @@ class ApiClient {
     LocationData? locationData = await Geolocation().getLocation();
     String lat = locationData?.latitude.toString() ?? '55.7522';
     String lon = locationData?.longitude.toString() ?? '37.6156';
-    final url = Uri.parse('https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=385bb906e33f38e8e09025c818d7ab22&units=metric&cnt=8&lang=ru');
-    final request = await client.getUrl(url);
-    final response = await request.close();
-    final jsonStrings = await response.transform(utf8.decoder).toList();
-    final jsonString = jsonStrings.join();
-    final json = jsonDecode(jsonString) as Map<String, dynamic>;
+    Response<Map<String, dynamic>> response = await Dio().get('https://api.openweathermap.org/data/2.5/forecast?lat=$lat&lon=$lon&appid=385bb906e33f38e8e09025c818d7ab22&units=metric&cnt=8&lang=ru');
+    final json = response.data;
     forecast = Forecast.fromJson(json);
     return forecast;
   }
